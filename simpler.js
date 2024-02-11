@@ -12,5 +12,5 @@ console.log(wrapper.foo.value)
 const copy1 = Object.create(wrapper)
 copy1.foo.value = 2
 
-// prints 2
+// prints 2 since the reference to helper was kept
 console.log(wrapper.foo.value)

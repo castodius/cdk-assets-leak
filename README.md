@@ -1,14 +1,7 @@
-# Welcome to your CDK TypeScript project
+# CDK assets leak
 
-This is a blank project for CDK development with TypeScript.
+The AWS CDK version <=2.127.0 leaks assets between stacks if an App with a DefaultStackSynthesizer is used and no Stack level synthesizer is specified. No special properties are needed on the DefaultStackSynthesizer. This issue occurs because each Stack copies the App synthesizer using Object.create. The DefaultStackSynthesizer contains a reference to an instance of AssetManifestBuilder which is kept as a reference. This means that each Stack ends up using the same AssetManifestBuilder and share assets.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+You can see examples of this in cdk.out and StackB.assets.json. It contains the template file for StackA which is unnecessary. If StackA had more files it would end up having those in its manifest as well.
 
-## Useful commands
-
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
-* `npx cdk deploy`  deploy this stack to your default AWS account/region
-* `npx cdk diff`    compare deployed stack with current state
-* `npx cdk synth`   emits the synthesized CloudFormation template
+The file simpler.js contains a small example of why this issue occurs.
